@@ -1,6 +1,6 @@
-# Dynamic Emergency Evacuation Planner
+# AgniRakshak — Dynamic Emergency Evacuation Planner
 
-A full-stack web application for planning and simulating emergency evacuations inside a building using manual **A\* pathfinding** with a Manhattan-distance heuristic, safety constraint validation, and dynamic rerouting under spreading fire conditions.
+A dynamic fire evacuation system: a full-stack web application for planning and simulating emergency evacuations inside a building using manual **A\* pathfinding** with a Manhattan-distance heuristic, safety constraint validation, and dynamic rerouting under spreading fire conditions.
 
 ---
 
