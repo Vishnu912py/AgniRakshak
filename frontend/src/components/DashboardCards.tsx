@@ -1,14 +1,5 @@
 import React from 'react';
-import { 
-  Users, 
-  CheckCircle2, 
-  Activity, 
-  AlertOctagon, 
-  DoorOpen, 
-  Flame, 
-  ShieldAlert,
-  Radio
-} from 'lucide-react';
+import { Activity, CheckCircle2, Flame, Users, DoorOpen, AlertTriangle } from 'lucide-react';
 import { SimStatus } from '../types/evacuation';
 
 interface DashboardCardsProps {
@@ -30,113 +21,42 @@ export const DashboardCards: React.FC<DashboardCardsProps> = ({
   fireZonesCount,
   simulationStatus,
 }) => {
-  const getSimStatusBadge = () => {
-    switch (simulationStatus) {
-      case 'ACTIVE':
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-400 border border-rose-500/40 animate-pulse">
-            <Radio className="w-3 h-3 animate-ping" />
-            ACTIVE
-          </span>
-        );
-      case 'PAUSED':
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-400 border border-amber-500/40">
-            PAUSED
-          </span>
-        );
-      default:
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">
-            STANDBY
-          </span>
-        );
-    }
-  };
+  const status = simulationStatus === 'ACTIVE'
+    ? { label: 'Running', color: 'bg-emerald-500' }
+    : simulationStatus === 'PAUSED'
+    ? { label: 'Paused', color: 'bg-amber-500' }
+    : { label: 'Ready', color: 'bg-slate-400' };
 
-  const cards = [
-    {
-      title: 'Total People',
-      value: totalPeople,
-      icon: <Users className="w-5 h-5 text-sky-400" />,
-      bg: 'bg-sky-950/30 border-sky-900/50',
-      textColor: 'text-sky-300',
-    },
-    {
-      title: 'Evacuated',
-      value: evacuated,
-      icon: <CheckCircle2 className="w-5 h-5 text-emerald-400" />,
-      bg: 'bg-emerald-950/30 border-emerald-900/50',
-      textColor: 'text-emerald-300',
-    },
-    {
-      title: 'Evacuating',
-      value: evacuating,
-      icon: <Activity className="w-5 h-5 text-indigo-400" />,
-      bg: 'bg-indigo-950/30 border-indigo-900/50',
-      textColor: 'text-indigo-300',
-    },
-    {
-      title: 'Trapped',
-      value: trapped,
-      icon: <AlertOctagon className="w-5 h-5 text-rose-400" />,
-      bg: trapped > 0 ? 'bg-rose-950/50 border-rose-600/70' : 'bg-slate-900/50 border-slate-800',
-      textColor: trapped > 0 ? 'text-rose-400 font-bold' : 'text-slate-400',
-    },
-    {
-      title: 'Safe Exits',
-      value: exitsCount,
-      icon: <DoorOpen className="w-5 h-5 text-teal-400" />,
-      bg: 'bg-teal-950/30 border-teal-900/50',
-      textColor: 'text-teal-300',
-    },
-    {
-      title: 'Fire Zones',
-      value: fireZonesCount,
-      icon: <Flame className="w-5 h-5 text-amber-400" />,
-      bg: fireZonesCount > 0 ? 'bg-rose-950/40 border-rose-800/60' : 'bg-slate-900/50 border-slate-800',
-      textColor: fireZonesCount > 0 ? 'text-amber-400' : 'text-slate-400',
-    },
+  const metrics = [
+    { label: 'People', value: totalPeople, icon: Users, tone: 'text-slate-300' },
+    { label: 'Safe', value: evacuated, icon: CheckCircle2, tone: 'text-emerald-400' },
+    { label: 'Moving', value: evacuating, icon: Activity, tone: 'text-sky-400' },
+    { label: 'Need help', value: trapped, icon: AlertTriangle, tone: trapped ? 'text-rose-400' : 'text-slate-400' },
   ];
 
   return (
-    <div className="space-y-4">
-      {/* Simulation status banner */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex flex-wrap items-center justify-between shadow-lg">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-indigo-950 border border-indigo-800 text-indigo-400">
-            <ShieldAlert className="w-5 h-5" />
-          </div>
-          <div>
-            <h3 className="text-sm font-semibold text-slate-100">Evacuation Monitoring Core</h3>
-            <p className="text-xs text-slate-400">Real-time path traversal, safety constraint validation & dynamic rerouting</p>
-          </div>
+    <section aria-label="Evacuation status" className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 px-5 py-3.5">
+        <div className="flex items-center gap-2 text-sm font-medium text-slate-200">
+          <span className={`h-2 w-2 rounded-full ${status.color}`} />
+          Simulation {status.label.toLowerCase()}
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-medium text-slate-400">Simulation Status:</span>
-          {getSimStatusBadge()}
+        <div className="flex items-center gap-4 text-xs text-slate-400">
+          <span className="inline-flex items-center gap-1.5"><DoorOpen className="h-3.5 w-3.5" />{exitsCount} exits</span>
+          <span className="inline-flex items-center gap-1.5"><Flame className="h-3.5 w-3.5" />{fireZonesCount} active fires</span>
         </div>
       </div>
-
-      {/* Grid of metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-        {cards.map((card, i) => (
-          <div
-            key={i}
-            className={`border rounded-xl p-3.5 flex flex-col justify-between transition-all duration-200 shadow-md ${card.bg}`}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-slate-400">{card.title}</span>
-              {card.icon}
-            </div>
-            <div className="flex items-baseline justify-between">
-              <span className={`text-2xl font-bold tracking-tight ${card.textColor}`}>
-                {card.value}
-              </span>
+      <div className="grid grid-cols-2 divide-x divide-y divide-slate-800 sm:grid-cols-4 sm:divide-y-0">
+        {metrics.map(({ label, value, icon: Icon, tone }) => (
+          <div key={label} className="flex items-center gap-3 px-5 py-4">
+            <Icon className={`h-4 w-4 shrink-0 ${tone}`} aria-hidden="true" />
+            <div>
+              <p className="text-2xl font-semibold leading-none tracking-tight text-slate-100">{value}</p>
+              <p className="mt-1.5 text-xs text-slate-500">{label}</p>
             </div>
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 };

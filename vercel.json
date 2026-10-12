@@ -1,4 +1,6 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
   "buildCommand": "npm ci --prefix frontend && npm run build --prefix frontend",
   "outputDirectory": "frontend/dist",
   "rewrites": [
@@ -11,7 +13,7 @@
       "destination": "/index.html"
     },
     {
-      "source": "/planner",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]

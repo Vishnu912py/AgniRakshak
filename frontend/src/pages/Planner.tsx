@@ -9,7 +9,6 @@ import {
   Sparkles,
   ShieldAlert,
   Loader2,
-  HelpCircle
 } from 'lucide-react';
 import { Toolbar } from '../components/Toolbar';
 import { BuildingGrid } from '../components/BuildingGrid';
@@ -143,8 +142,8 @@ export const Planner: React.FC = () => {
       setFires(demo.fires || []);
       setSelectedPersonId(null);
 
-      showAlert('Demo Scenario loaded successfully! Calculating evacuation routes...', 'success');
-      await addEvent('Demo scenario loaded with corridors, exits, and fire hazards.', 'info');
+      showAlert('Sample layout loaded.', 'success');
+      await addEvent('Sample layout loaded.', 'info');
 
       // Immediate route calculation for demo
       setTimeout(() => {
@@ -262,11 +261,11 @@ export const Planner: React.FC = () => {
     triggerReason?: string
   ) => {
     if (currentExits.length === 0) {
-      showAlert('No exits configured. At least one exit is required for evacuation.', 'error');
+      showAlert('Add at least one exit before finding routes.', 'error');
       return;
     }
     if (currentPeople.length === 0) {
-      showAlert('No occupants on grid to evacuate.', 'info');
+      showAlert('Add a person to the map first.', 'info');
       setRoutes([]);
       return;
     }
@@ -336,7 +335,7 @@ export const Planner: React.FC = () => {
           'error'
         );
       } else {
-        showAlert(`A* evacuation routes calculated successfully for ${res.routes.length} people.`, 'success');
+      showAlert(`Safe routes found for ${res.routes.length} people.`, 'success');
       }
     } catch (err: any) {
       showAlert(`Calculation Error: ${err?.response?.data?.detail || err.message}`, 'error');
@@ -627,7 +626,7 @@ export const Planner: React.FC = () => {
       )}
 
       {/* Building Header & Persistence Bar */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-indigo-950/80 border border-indigo-800 text-indigo-400">
             <ShieldAlert className="w-5 h-5" />
@@ -641,13 +640,10 @@ export const Planner: React.FC = () => {
                 className="bg-slate-950 border border-slate-800 text-slate-100 font-bold text-sm px-2.5 py-1 rounded-lg focus:outline-none focus:border-indigo-500"
                 placeholder="Building Name"
               />
-              <span className="text-[11px] text-slate-500 font-mono">
-                ({gridSize}×{gridSize})
+              <span className="text-xs text-slate-500">
+                {gridSize} × {gridSize}
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Draw walls, place people & exits, calculate A* safe paths, and simulate dynamic fire propagation.
-            </p>
           </div>
         </div>
 
@@ -656,7 +652,7 @@ export const Planner: React.FC = () => {
           <button
             onClick={handleSaveBuilding}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition cursor-pointer"
-            title="Save Building Layout to SQLite"
+            title="Save this layout"
           >
             <Save className="w-3.5 h-3.5 text-indigo-400" />
             <span>Save</span>
@@ -725,7 +721,7 @@ export const Planner: React.FC = () => {
 
       {/* Main Layout: Building Grid in Center, Occupants & Events on Sides */}
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-4">
-        {/* Left Column: Occupants & Route Status */}
+        {/* People and route status */}
         <div className="xl:col-span-1 space-y-4">
           <PersonList
             people={people}
@@ -735,23 +731,6 @@ export const Planner: React.FC = () => {
             onRemovePerson={handleRemovePerson}
           />
 
-          {/* Quick Guidance Card */}
-          <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-3.5 text-xs text-slate-400 space-y-2">
-            <div className="flex items-center gap-1.5 font-semibold text-slate-300">
-              <HelpCircle className="w-3.5 h-3.5 text-indigo-400" />
-              <span>A* Pathfinding & Constraints</span>
-            </div>
-            <p className="text-[11px] leading-relaxed">
-              Calculates shortest path using Manhattan distance heuristic:
-              <br />
-              <code className="text-indigo-300 bg-slate-950 px-1 py-0.5 rounded font-mono text-[10px]">
-                f(n) = g(n) + |Δr| + |Δc|
-              </code>
-            </p>
-            <p className="text-[11px] leading-relaxed">
-              When fire spreads into an active corridor, routes automatically recalculate and redirect occupants to safe alternative exits.
-            </p>
-          </div>
         </div>
 
         {/* Center: Building Grid */}

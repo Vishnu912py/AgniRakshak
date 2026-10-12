@@ -40,7 +40,7 @@ export const SimulationControls: React.FC<SimulationControlsProps> = ({
   const isRunning = simulationStatus === 'ACTIVE';
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-4">
+    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2">
           {isRunning ? (
@@ -51,7 +51,7 @@ export const SimulationControls: React.FC<SimulationControlsProps> = ({
               title="Pause fire spread simulation"
             >
               <Pause className="w-4 h-4 fill-current" />
-              <span>Pause Fire</span>
+              <span>Pause</span>
             </button>
           ) : (
             <button
@@ -61,7 +61,7 @@ export const SimulationControls: React.FC<SimulationControlsProps> = ({
               title="Start periodic fire spread simulation (every 2 seconds)"
             >
               <Play className="w-4 h-4 fill-current" />
-              <span>Start Fire Spread</span>
+              <span>Start simulation</span>
             </button>
           )}
 
@@ -72,7 +72,7 @@ export const SimulationControls: React.FC<SimulationControlsProps> = ({
             title="Step fire spread forward by 1 tick"
           >
             <Flame className="w-3.5 h-3.5" />
-            <span>Step Fire</span>
+            <span>Fire step</span>
           </button>
         </div>
 
@@ -91,7 +91,7 @@ export const SimulationControls: React.FC<SimulationControlsProps> = ({
             title="Animate people moving step-by-step along their evacuation paths"
           >
             <Footprints className="w-4 h-4" />
-            <span>{isEvacuating ? 'Stop Evacuation' : 'Animate Evacuation'}</span>
+            <span>{isEvacuating ? 'Stop movement' : 'Move people'}</span>
           </button>
 
           <button
@@ -101,7 +101,7 @@ export const SimulationControls: React.FC<SimulationControlsProps> = ({
             title="Move people 1 step forward along their paths"
           >
             <FastForward className="w-3.5 h-3.5" />
-            <span>Step Movement</span>
+            <span>Step</span>
           </button>
         </div>
       </div>
@@ -110,14 +110,14 @@ export const SimulationControls: React.FC<SimulationControlsProps> = ({
         {/* Fire spread speed selector */}
         <div className="flex items-center gap-2 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800 text-xs">
           <Clock className="w-3.5 h-3.5 text-slate-400" />
-          <span className="text-slate-400">Fire Interval:</span>
+          <span className="text-slate-400">Fire every</span>
           <select
             value={fireSpreadIntervalSeconds}
             onChange={(e) => onIntervalChange(Number(e.target.value))}
             className="bg-transparent text-slate-200 font-medium focus:outline-none cursor-pointer"
           >
             <option value={1} className="bg-slate-900">1s</option>
-            <option value={2} className="bg-slate-900">2s (Standard)</option>
+            <option value={2} className="bg-slate-900">2s</option>
             <option value={3} className="bg-slate-900">3s</option>
             <option value={5} className="bg-slate-900">5s</option>
           </select>
@@ -131,7 +131,7 @@ export const SimulationControls: React.FC<SimulationControlsProps> = ({
           title="Reset simulation state"
         >
           <RotateCcw className="w-3.5 h-3.5" />
-          <span>Reset Simulation</span>
+          <span>Reset</span>
         </button>
       </div>
     </div>

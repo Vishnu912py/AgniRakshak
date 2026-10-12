@@ -1,31 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Building2, 
-  MapPin, 
-  Compass, 
-  Sparkles, 
-  Flame, 
-  ShieldCheck, 
-  RefreshCw, 
-  ArrowRight
-} from 'lucide-react';
+import { Building2, Compass, RefreshCw } from 'lucide-react';
 import { DashboardCards } from '../components/DashboardCards';
 import { EventLog } from '../components/EventLog';
 import { evacuationApi } from '../services/api';
 import { Building, EventLogItem, SimulationStateResponse } from '../types/evacuation';
 
+const emptyStatus: SimulationStateResponse = {
+  status: 'STOPPED',
+  total_people: 0,
+  evacuated: 0,
+  evacuating: 0,
+  trapped: 0,
+  exits_count: 0,
+  fire_zones_count: 0,
+  recent_events: [],
+};
+
 export const Dashboard: React.FC = () => {
-  const [status, setStatus] = useState<SimulationStateResponse>({
-    status: 'STOPPED',
-    total_people: 4,
-    evacuated: 0,
-    evacuating: 4,
-    trapped: 0,
-    exits_count: 3,
-    fire_zones_count: 2,
-    recent_events: [],
-  });
+  const [status, setStatus] = useState<SimulationStateResponse>(emptyStatus);
   const [events, setEvents] = useState<EventLogItem[]>([]);
   const [buildings, setBuildings] = useState<Building[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +29,7 @@ export const Dashboard: React.FC = () => {
       const [statusRes, eventsRes, buildingsRes] = await Promise.all([
         evacuationApi.getStatus(),
         evacuationApi.getEvents(),
-        evacuationApi.getBuildings()
+        evacuationApi.getBuildings(),
       ]);
       setStatus(statusRes);
       setEvents(eventsRes);
@@ -50,50 +43,40 @@ export const Dashboard: React.FC = () => {
 
   useEffect(() => {
     fetchDashboardData();
-    const interval = setInterval(fetchDashboardData, 3000);
-    return () => clearInterval(interval);
+    const interval = window.setInterval(fetchDashboardData, 5000);
+    return () => window.clearInterval(interval);
   }, []);
 
   return (
-    <div className="space-y-6">
-      {/* Top Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
-        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs font-semibold mb-3">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Autonomous Facility Safety Engine</span>
-            </div>
-            <h1 className="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">
-              Emergency Evacuation Command Center
-            </h1>
-            <p className="text-sm text-slate-400 max-w-2xl mt-1.5 leading-relaxed">
-              Real-time monitoring using A* pathfinding and lightweight safety constraint verification. Dynamically recalculates routes when fire barriers spread.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={fetchDashboardData}
-              disabled={isLoading}
-              className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition cursor-pointer border border-slate-700"
-              title="Refresh Dashboard Stats"
-            >
-              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-indigo-400' : ''}`} />
-            </button>
-            <Link
-              to="/planner"
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/30 transition cursor-pointer"
-            >
-              <Compass className="w-4 h-4" />
-              <span>Open Planner</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
+    <div className="space-y-8">
+      <section className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="mb-2 text-sm font-medium text-orange-600">Building safety</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-slate-100">Overview</h1>
+          <p className="mt-2 max-w-xl text-sm leading-6 text-slate-400">
+            A clear view of people, exits and current hazards.
+          </p>
         </div>
-      </div>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={fetchDashboardData}
+            disabled={isLoading}
+            aria-label="Refresh overview"
+            className="rounded-lg border border-slate-800 p-2.5 text-slate-400 transition-colors hover:bg-slate-900 hover:text-slate-100 disabled:opacity-50"
+          >
+            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+          </button>
+          <Link
+            to="/planner"
+            className="inline-flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500"
+          >
+            <Compass className="h-4 w-4" />
+            Open planner
+          </Link>
+        </div>
+      </section>
 
-      {/* Primary KPI Metric Cards */}
       <DashboardCards
         totalPeople={status.total_people}
         evacuated={status.evacuated}
@@ -104,64 +87,35 @@ export const Dashboard: React.FC = () => {
         simulationStatus={status.status}
       />
 
-      {/* Grid: Saved Buildings & Recent Events */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Buildings summary */}
-        <div className="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-xl flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
-              <div className="flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-indigo-400" />
-                <h3 className="text-sm font-semibold text-slate-100">Configured Facilities</h3>
-              </div>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">
-                {buildings.length}
-              </span>
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5 lg:col-span-1">
+          <div className="mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <Building2 className="h-4 w-4 text-orange-500" />
+              <h2 className="text-sm font-semibold text-slate-100">Saved layouts</h2>
             </div>
-
-            <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
-              {buildings.length === 0 ? (
-                <div className="text-center py-6 text-xs text-slate-500">
-                  No buildings saved yet. Jump to Planner or initialize the Demo Scenario.
-                </div>
-              ) : (
-                buildings.map((b) => (
-                  <div
-                    key={b.id}
-                    className="p-3 rounded-lg border border-slate-800/80 bg-slate-950/60 hover:bg-slate-800/40 transition flex items-center justify-between"
-                  >
-                    <div>
-                      <div className="text-xs font-semibold text-slate-200">{b.name}</div>
-                      <div className="text-[10px] text-slate-400 font-mono mt-0.5">
-                        {b.rows}×{b.columns} | {b.people.length} People | {b.exits.length} Exits
-                      </div>
-                    </div>
-                    <Link
-                      to="/planner"
-                      className="text-xs text-indigo-400 hover:text-indigo-300 font-medium"
-                    >
-                      Load
-                    </Link>
+            <span className="text-xs text-slate-500">{buildings.length}</span>
+          </div>
+          {buildings.length === 0 ? (
+            <p className="py-5 text-sm text-slate-500">Your saved layouts will appear here.</p>
+          ) : (
+            <ul className="divide-y divide-slate-800">
+              {buildings.slice(0, 5).map((building) => (
+                <li key={building.id} className="flex items-center justify-between gap-3 py-3 first:pt-1 last:pb-1">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-slate-200">{building.name}</p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {building.rows} × {building.columns} <span aria-hidden="true">·</span> {building.people.length} people
+                    </p>
                   </div>
-                ))
-              )}
-            </div>
-          </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
 
-          <div className="pt-4 border-t border-slate-800/80 mt-4">
-            <Link
-              to="/planner"
-              className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-indigo-950/60 hover:bg-indigo-900/60 border border-indigo-800/50 text-indigo-300 text-xs font-medium transition cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Launch Evacuation Planner</span>
-            </Link>
-          </div>
-        </div>
-
-        {/* Live Incident & Event Log */}
         <div className="lg:col-span-2">
-          <EventLog events={events} maxHeight="h-80" />
+          <EventLog events={events} maxHeight="max-h-80" />
         </div>
       </div>
     </div>

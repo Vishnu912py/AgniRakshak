@@ -101,7 +101,7 @@ export const BuildingGrid: React.FC<BuildingGridProps> = ({
 
   return (
     <div 
-      className="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl flex flex-col items-center select-none"
+      className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col items-center select-none"
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >
@@ -136,11 +136,11 @@ export const BuildingGrid: React.FC<BuildingGridProps> = ({
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-3.5 h-3.5 rounded bg-indigo-500/30 border border-indigo-400/80 inline-block"></span>
-            <span>A* Route</span>
+            <span>Route</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-3.5 h-3.5 rounded bg-amber-500/40 border border-amber-300 inline-block"></span>
-            <span>Selected Route</span>
+            <span>Selected</span>
           </div>
         </div>
 
@@ -242,10 +242,21 @@ export const BuildingGrid: React.FC<BuildingGridProps> = ({
                 key={key}
                 onMouseDown={() => handleMouseDown(r, c)}
                 onMouseEnter={() => handleMouseEnter(r, c)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    handleMouseDown(r, c);
+                    handleMouseUp();
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={`Row ${r + 1}, column ${c + 1}: ${cellType}${personHere ? `, ${personHere.label || personHere.id}` : ''}${exitHere ? `, ${exitHere.label || exitHere.id}` : ''}`}
                 className={`
                   relative flex items-center justify-center 
                   transition-all duration-100 cursor-pointer 
                   border rounded-[4px]
+                  focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-500
                   ${cols > 20 ? 'w-6 h-6' : cols > 15 ? 'w-8 h-8' : cols > 10 ? 'w-10 h-10' : 'w-12 h-12'}
                   ${cellBg}
                 `}
@@ -259,8 +270,8 @@ export const BuildingGrid: React.FC<BuildingGridProps> = ({
       </div>
 
       <div className="w-full flex items-center justify-between text-[11px] text-slate-500 pt-2 px-1">
-        <span>Click or drag cells to apply active tool</span>
-        <span>Grid: {rows} × {cols}</span>
+        <span>Click or drag to edit</span>
+        <span>{rows} × {cols}</span>
       </div>
     </div>
   );

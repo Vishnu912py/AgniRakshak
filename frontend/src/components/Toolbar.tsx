@@ -81,20 +81,19 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   ];
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl flex flex-wrap gap-4 items-center justify-between">
+    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-wrap gap-4 items-center justify-between">
       {/* Editor Tools */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 mr-1">
-          Editor Tools
-        </span>
-        <div className="inline-flex bg-slate-950 p-1 rounded-lg border border-slate-800 gap-1">
+        <div className="inline-flex flex-wrap bg-slate-950 p-1 rounded-lg border border-slate-800 gap-1">
           {tools.map((t) => {
             const isActive = selectedTool === t.id;
             return (
               <button
                 key={t.id}
+                type="button"
                 onClick={() => onSelectTool(t.id)}
                 disabled={disabled}
+                aria-pressed={isActive}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150 ${
                   isActive
                     ? `${t.activeColor} shadow-md`
@@ -123,7 +122,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         >
           <option value={10}>10 x 10</option>
           <option value={15}>15 x 15</option>
-          <option value={20}>20 x 20 (Standard)</option>
+          <option value={20}>20 x 20</option>
           <option value={25}>25 x 25</option>
         </select>
       </div>
@@ -137,7 +136,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           title="Load preconfigured demo building with corridors, fire, exits and people"
         >
           <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-          <span>Load Demo Scenario</span>
+          <span>Sample layout</span>
         </button>
 
         <button
@@ -147,17 +146,17 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           title="Clear grid layout"
         >
           <RotateCcw className="w-3.5 h-3.5" />
-          <span>Clear</span>
+          <span>Clear map</span>
         </button>
 
         <button
           onClick={onCalculateRoutes}
           disabled={isCalculating}
           className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white shadow-lg shadow-emerald-600/25 transition cursor-pointer disabled:opacity-50"
-          title="Run A* pathfinding to calculate shortest safe evacuation routes"
+          title="Find safe routes for everyone"
         >
           <Route className="w-4 h-4" />
-          <span>{isCalculating ? 'Calculating...' : 'Calculate Routes'}</span>
+          <span>{isCalculating ? 'Finding routes…' : 'Find safe routes'}</span>
         </button>
       </div>
     </div>
