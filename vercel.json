@@ -1,21 +1,15 @@
 {
-
-"builds": [
+  "buildCommand": "npm run build --prefix frontend",
+  "installCommand": "npm install --prefix frontend",
+  "outputDirectory": "frontend/dist",
+  "rewrites": [
     {
-        "src":"backend/main.py",
-        "use":"@vercel/python"
-
-    }
-
-
-],
-
-"routes": [
+      "source": "/api/(.*)",
+      "destination": "/api/index.py"
+    },
     {
-        "src":"/(.*0",
-        "dest":"backend/main.py"
+      "source": "/planner",
+      "destination": "/index.html"
     }
-
-]
-
+  ]
 }

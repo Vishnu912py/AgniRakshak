@@ -91,3 +91,9 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 python -m pytest backend/ -v
 ```
 All 14 unit and integration test scenarios pass with 100% coverage.
+
+## Deploying to Vercel
+
+Deploy the repository root as one Vercel project. The root `vercel.json` builds the Vite frontend from `frontend/`, serves its output from `frontend/dist`, and rewrites `/api/*` requests to the FastAPI function in `api/index.py`. The root `requirements.txt` declares the Python function dependencies.
+
+The SQLite database runs from `/tmp` on Vercel because function files are not writable. That storage is temporary and is not shared reliably across function instances, so use a managed database for persistent production data.

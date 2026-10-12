@@ -1,8 +1,12 @@
 import os
+import tempfile
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-DATABASE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "evacuation.db")
+if os.environ.get("VERCEL"):
+    DATABASE_FILE = os.path.join(tempfile.gettempdir(), "evacuation.db")
+else:
+    DATABASE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "evacuation.db")
 SQLALCHEMY_DATABASE_URL = f"sqlite:///{os.path.abspath(DATABASE_FILE)}"
 
 engine = create_engine(
