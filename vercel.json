@@ -7,6 +7,10 @@
       "destination": "/api/index.py"
     },
     {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
       "source": "/planner",
       "destination": "/index.html"
     }
